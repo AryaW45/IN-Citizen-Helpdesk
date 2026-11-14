@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Helpdesk - IN </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="logo-area">
+                <span class="flag-icon">🇮🇳</span>
+                <div>
+                    <h1>Citizen Helpdesk</h1>
+                    <p class="subtitle">Live Web Search & Groq (Qwen 27B/32B)</p>
+                </div>
+            </div>
+            <span class="badge">Live Search RAG</span>
+        </header>
+
+        <!-- Chat History Window -->
+        <main id="chat-container" class="chat-container">
+            <div class="message assistant-message">
+                <div class="message-content">
+                    Hello! I am your citizen assistance assistant. Ask me anything about public services, government schemes, or updates, and I will search the live web to fetch accurate, cited details for you.
+                </div>
+            </div>
+        </main>
+
+        <!-- Status & Input Form -->
+        <footer class="input-area">
+            <div id="status-indicator" class="status-indicator hidden">
+                <span class="spinner"></span>
+                <span id="status-text">Searching the live web...</span>
+            </div>
+
+            <form id="chat-form" class="chat-form">
+                <textarea 
+                    id="user-input" 
+                    placeholder="Ask a question (e.g., 'What are the document requirements for PM Kisan?')..." 
+                    rows="1"
+                    required
+                ></textarea>
+                <button type="submit" id="send-btn">
+                    <span>Send</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                </button>
+            </form>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="services/web_search.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

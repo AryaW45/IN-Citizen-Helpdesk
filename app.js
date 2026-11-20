@@ -55,10 +55,10 @@ chatForm.addEventListener("submit", async (e) => {
     updateStatus(true, "Searching the live web via Tavily...");
 
     try {
-        // 3. Step 2 to 5: Fetch live web search snippets
+        // 3. Fetch live web search snippets via backend proxy
         const { contextText, sources } = await fetchWebContext(query);
 
-        updateStatus(true, "Synthesizing live answer with Qwen (Groq)...");
+        updateStatus(true, "Synthesizing live answer with Groq...");
 
         // 4. Construct messages payload with conversation memory + live web context
         const userPromptWithContext = `Live Web Search Context:\n${contextText}\n\nUser Question: ${query}`;
@@ -69,7 +69,7 @@ chatForm.addEventListener("submit", async (e) => {
             { role: "user", content: userPromptWithContext }
         ];
 
-        // 5. Step 6: Query Groq API
+        // 5. Query Groq via backend proxy
         const botAnswer = await callGroqAPI(apiMessages);
 
         // 6. Save turn in memory
@@ -88,17 +88,16 @@ chatForm.addEventListener("submit", async (e) => {
 });
 
 /**
- * Calls the Groq Chat Completions API.
+ * Calls your backend proxy, which securely forwards the request to Groq.
  */
 async function callGroqAPI(messages) {
-    if (!CONFIG.GROQ_API_KEY || CONFIG.GROQ_API_KEY.includes("[Groq key🔵]")) {
-        throw new Error("Missing Groq API Key in config.js");
+    if (!CONFIG.BACKEND_BASE_URL || CONFIG.BACKEND_BASE_URL.includes("your-backend-worker")) {
+        throw new Error("Backend URL is not configured in config.js");
     }
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const response = await fetch(`${CONFIG.BACKEND_BASE_URL}/api/chat`, {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${CONFIG.GROQ_API_KEY}`,
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -109,8 +108,12 @@ async function callGroqAPI(messages) {
     });
 
     if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error?.message || `Groq API Error (${response.status})`);
+        let errMessage = `Chat Backend Error (${response.status})`;
+        try {
+            const errData = await response.json();
+            errMessage = errData.error?.message || errData.error || errMessage;
+        } catch (_) {}
+        throw new Error(errMessage);
     }
 
     const data = await response.json();
